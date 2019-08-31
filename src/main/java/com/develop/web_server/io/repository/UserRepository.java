@@ -1,4 +1,4 @@
-package com.develop.web_server.repository;
+package com.develop.web_server.io.repository;
 
 import com.develop.web_server.io.entity.UserEntity;
 import org.springframework.data.repository.CrudRepository;
