@@ -7,6 +7,7 @@ import com.develop.web_server.ui.model.reponse.UserRest;
 import com.develop.web_server.ui.model.request.UserDetailsRequestModel;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +18,8 @@ public class UserController {
     UserService userService;
 
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserRest getUser(@PathVariable String id) {
         UserRest response = new UserRest();
         UserDto userDto = userService.getUserByUserId(id);
@@ -25,7 +27,8 @@ public class UserController {
         return response;
     }
 
-    @PostMapping
+    @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
         UserRest response = new UserRest();
         UserDto userDto = new UserDto();
