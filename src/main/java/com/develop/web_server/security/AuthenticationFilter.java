@@ -25,7 +25,7 @@ import java.util.Date;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager) {
+    AuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
