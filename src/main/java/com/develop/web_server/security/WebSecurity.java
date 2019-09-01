@@ -9,6 +9,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+
+
+/*
+登錄驗證: UsernamePasswordAuthenticationFilter
+訪問驗證: BasicAuthenticationFilter
+權限驗證: FilterSecurityInterceptor
+*/
+
+
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
