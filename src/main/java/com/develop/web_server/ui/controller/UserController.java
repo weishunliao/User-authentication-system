@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -28,6 +31,25 @@ public class UserController {
         UserRest response = new UserRest();
         UserDto userDto = userService.getUserByUserId(userId);
         BeanUtils.copyProperties(userDto, response);
+        return response;
+    }
+
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<UserRest> getUsers(@RequestParam(value="page", defaultValue = "0") int page,
+                                   @RequestParam(value="limit", defaultValue = "25") int limit) {
+
+        if (page > 1) {
+            page -= 1;
+        }
+
+        List<UserRest> response = new ArrayList<>();
+
+        List<UserDto> users = userService.getUsers(page, limit);
+        for (UserDto user : users) {
+            UserRest userRest = new UserRest();
+            BeanUtils.copyProperties(user, userRest);
+            response.add(userRest);
+        }
         return response;
     }
 
