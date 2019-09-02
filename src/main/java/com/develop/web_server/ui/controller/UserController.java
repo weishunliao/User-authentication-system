@@ -5,6 +5,8 @@ import com.develop.web_server.exception.UserServiceException;
 import com.develop.web_server.service.UserService;
 import com.develop.web_server.shared.dto.UserDto;
 import com.develop.web_server.ui.model.reponse.ErrorMessages;
+import com.develop.web_server.ui.model.reponse.OperationStatusModel;
+import com.develop.web_server.ui.model.reponse.RequestOperationStatus;
 import com.develop.web_server.ui.model.reponse.UserRest;
 import com.develop.web_server.ui.model.request.UserDetailsRequestModel;
 import org.springframework.beans.BeanUtils;
@@ -59,8 +61,15 @@ public class UserController {
         return response;
     }
 
-    @DeleteMapping
-    public String delUser() {
-        return "delete user was called";
+    @DeleteMapping(path = "/{userId}",produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public OperationStatusModel delUser(@PathVariable String userId) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.DELETE.name());
+
+        userService.deleteUser(userId);
+
+        returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        System.out.println(returnValue);
+        return returnValue;
     }
 }
