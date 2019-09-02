@@ -1,10 +1,12 @@
 package com.develop.web_server.service.impl;
 
+import com.develop.web_server.exception.UserServiceException;
 import com.develop.web_server.io.repository.UserRepository;
 import com.develop.web_server.io.entity.UserEntity;
 import com.develop.web_server.service.UserService;
 import com.develop.web_server.shared.Utils;
 import com.develop.web_server.shared.dto.UserDto;
+import com.develop.web_server.ui.model.reponse.ErrorMessages;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
 
         if (userRepository.findByEmail(userDto.getEmail()) != null) {
-            throw new RuntimeException("User already exist");
+            throw new RuntimeException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }
 
         UserEntity userEntity = new UserEntity();
@@ -81,6 +83,23 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(userId);
         }
         BeanUtils.copyProperties(userEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public UserDto updateUser(String userId, UserDto userDto) {
+        UserDto returnValue = new UserDto();
+        UserEntity userEntity = userRepository.findByUserID(userId);
+        if (userEntity == null) {
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+        userEntity.setFirstName(userDto.getFirstName());
+        userEntity.setLastName(userDto.getLastName());
+
+
+        UserEntity updatedUserEntity = userRepository.save(userEntity);
+
+        BeanUtils.copyProperties(updatedUserEntity, returnValue);
         return returnValue;
     }
 }

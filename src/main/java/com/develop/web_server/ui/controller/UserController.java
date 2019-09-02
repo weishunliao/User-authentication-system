@@ -20,11 +20,11 @@ public class UserController {
     UserService userService;
 
 
-    @GetMapping(path = "/{id}",
+    @GetMapping(path = "/{userId}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public UserRest getUser(@PathVariable String id) {
+    public UserRest getUser(@PathVariable String userId) {
         UserRest response = new UserRest();
-        UserDto userDto = userService.getUserByUserId(id);
+        UserDto userDto = userService.getUserByUserId(userId);
         BeanUtils.copyProperties(userDto, response);
         return response;
     }
@@ -46,9 +46,17 @@ public class UserController {
         return response;
     }
 
-    @PutMapping
-    public String updateUser() {
-        return "update user was called";
+    @PutMapping(path = "/{userId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public UserRest updateUser(@PathVariable String userId, @RequestBody UserDetailsRequestModel userDetails) {
+        UserRest response = new UserRest();
+        UserDto userDto = new UserDto();
+
+        BeanUtils.copyProperties(userDetails, userDto);
+        UserDto updatedUser = userService.updateUser(userId, userDto);
+        BeanUtils.copyProperties(updatedUser, response);
+        return response;
     }
 
     @DeleteMapping
