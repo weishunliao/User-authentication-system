@@ -35,10 +35,10 @@ public class UserController {
     }
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public List<UserRest> getUsers(@RequestParam(value="page", defaultValue = "0") int page,
-                                   @RequestParam(value="limit", defaultValue = "25") int limit) {
+    public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+                                   @RequestParam(value = "limit", defaultValue = "25") int limit) {
 
-        if (page > 1) {
+        if (page > 0) {
             page -= 1;
         }
 
@@ -83,7 +83,7 @@ public class UserController {
         return response;
     }
 
-    @DeleteMapping(path = "/{userId}",produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @DeleteMapping(path = "/{userId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public OperationStatusModel delUser(@PathVariable String userId) {
         OperationStatusModel returnValue = new OperationStatusModel();
         returnValue.setOperationName(RequestOperationName.DELETE.name());

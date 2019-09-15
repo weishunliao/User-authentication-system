@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class AuthorizationFilter extends BasicAuthenticationFilter {
 
-    public AuthorizationFilter(AuthenticationManager authenticationManager) {
+    AuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
 
