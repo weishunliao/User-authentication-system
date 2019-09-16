@@ -6,8 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
+@RestController
 @EntityScan("com.develop.web_server.io.entity")
 public class WebServerApplication {
 
@@ -15,9 +19,14 @@ public class WebServerApplication {
         SpringApplication.run(WebServerApplication.class, args);
     }
 
+    @GetMapping("/")
+    public String home() {
+        return "Hello World.";
+    }
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return  new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
