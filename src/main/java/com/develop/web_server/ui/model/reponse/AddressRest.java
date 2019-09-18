@@ -1,20 +1,22 @@
 package com.develop.web_server.ui.model.reponse;
 
-public class AddressRest {
+import org.springframework.hateoas.ResourceSupport;
 
-    private String id;
+public class AddressRest extends ResourceSupport {
+
+    private String addressId;
     private String city;
     private String country;
     private String streetName;
     private String postCode;
     private String type;
 
-    public String getId() {
-        return id;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 
     public String getCity() {
