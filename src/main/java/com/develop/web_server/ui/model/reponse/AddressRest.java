@@ -1,12 +1,21 @@
 package com.develop.web_server.ui.model.reponse;
 
-public class AddressResponseModel {
+public class AddressRest {
 
+    private String id;
     private String city;
     private String country;
     private String streetName;
     private String postCode;
     private String type;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getCity() {
         return city;

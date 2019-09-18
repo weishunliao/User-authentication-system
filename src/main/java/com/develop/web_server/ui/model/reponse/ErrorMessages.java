@@ -5,6 +5,7 @@ public enum ErrorMessages {
     RECORD_ALREADY_EXISTS("Record already exists."),
     INTERNAL_SERVER_ERROR("Internal server error."),
     NO_RECORD_FOUND("Record with provided ID is not found."),
+    NO_ADDRESS_FOUND("Record with provided address ID is not found."),
     AUTHENTICATION_FAIL("Authentication failed."),
     COULD_NOT_UPDATE_RECORD("Could not update record."),
     COULD_NOT_DELETE_RECORD("Could not delete record."),

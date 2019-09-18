@@ -2,6 +2,7 @@ package com.develop.web_server.ui.controller;
 
 
 import com.develop.web_server.exception.UserServiceException;
+import com.develop.web_server.service.AddressService;
 import com.develop.web_server.service.UserService;
 import com.develop.web_server.shared.dto.AddressDto;
 import com.develop.web_server.shared.dto.UserDto;
@@ -23,6 +24,8 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    AddressService addressService;
 
     @GetMapping(path = "/{userId}",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -35,15 +38,29 @@ public class UserController {
 
     @GetMapping(path = "/{userId}/addresses",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public List<AddressResponseModel> getUserAddresses(@PathVariable String userId) {
+    public List<AddressRest> getUserAddresses(@PathVariable String userId) {
 
-        List<AddressResponseModel> response = new ArrayList<>();
+        List<AddressRest> response = new ArrayList<>();
         List<AddressDto> addresses = userService.getUserAddresses(userId);
         ModelMapper modelMapper = new ModelMapper();
         for (AddressDto address : addresses) {
-            response.add(modelMapper.map(address,AddressResponseModel.class));
+            response.add(modelMapper.map(address, AddressRest.class));
         }
         return response;
+    }
+
+    @GetMapping(path = "/{userId}/addresses/{addressId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public AddressRest getUserAddressesById(@PathVariable String userId, @PathVariable String addressId) {
+
+        AddressDto address = addressService.getAddressByAddressId(addressId);
+        if (address != null) {
+            ModelMapper modelMapper = new ModelMapper();
+            AddressRest responseModel = modelMapper.map(address, AddressRest.class);
+            return responseModel;
+        }
+        throw new UserServiceException(ErrorMessages.NO_ADDRESS_FOUND.getErrorMessage());
+
     }
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
