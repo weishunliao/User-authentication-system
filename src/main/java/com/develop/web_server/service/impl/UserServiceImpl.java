@@ -1,12 +1,16 @@
 package com.develop.web_server.service.impl;
 
 import com.develop.web_server.exception.UserServiceException;
+import com.develop.web_server.io.entity.AddressEntity;
+import com.develop.web_server.io.repository.AddressRepository;
 import com.develop.web_server.io.repository.UserRepository;
 import com.develop.web_server.io.entity.UserEntity;
 import com.develop.web_server.service.UserService;
 import com.develop.web_server.shared.Utils;
+import com.develop.web_server.shared.dto.AddressDto;
 import com.develop.web_server.shared.dto.UserDto;
 import com.develop.web_server.ui.model.reponse.ErrorMessages;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +34,9 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Autowired
+    AddressRepository addressRepository;
+
+    @Autowired
     Utils utils;
 
     @Autowired
@@ -37,20 +44,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-
         if (userRepository.findByEmail(userDto.getEmail()) != null) {
             throw new RuntimeException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }
 
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(userDto, userEntity);
+        for (AddressDto addressDto : userDto.getAddresses()) {
+            addressDto.setUserDetails(userDto);
+            addressDto.setAddressId(utils.generateAddressID(30));
+        }
+
+
+        ModelMapper modelMapper = new ModelMapper();
+        UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
 
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         userEntity.setUserID(utils.generateUserID(30));
 
+
         UserEntity storedUserDetails = userRepository.save(userEntity);
-        UserDto returnValue = new UserDto();
-        BeanUtils.copyProperties(storedUserDetails, returnValue);
+        UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
 
 
         return returnValue;
@@ -93,6 +105,22 @@ public class UserServiceImpl implements UserService {
         }
 
         return response;
+    }
+
+    @Override
+    public List<AddressDto> getUserAddresses(String id) {
+
+        UserEntity userEntity = userRepository.findByUserID(id);
+
+        List<AddressEntity> addresses = addressRepository.findAllByUserDetails(userEntity);
+        List<AddressDto> resp = new ArrayList<>();
+
+        ModelMapper mapper = new ModelMapper();
+        for (AddressEntity address : addresses) {
+            AddressDto addressDto = mapper.map(address, AddressDto.class);
+            resp.add(addressDto);
+        }
+        return resp;
     }
 
     @Override

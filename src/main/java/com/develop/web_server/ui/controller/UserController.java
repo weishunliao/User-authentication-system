@@ -3,12 +3,11 @@ package com.develop.web_server.ui.controller;
 
 import com.develop.web_server.exception.UserServiceException;
 import com.develop.web_server.service.UserService;
+import com.develop.web_server.shared.dto.AddressDto;
 import com.develop.web_server.shared.dto.UserDto;
-import com.develop.web_server.ui.model.reponse.ErrorMessages;
-import com.develop.web_server.ui.model.reponse.OperationStatusModel;
-import com.develop.web_server.ui.model.reponse.RequestOperationStatus;
-import com.develop.web_server.ui.model.reponse.UserRest;
+import com.develop.web_server.ui.model.reponse.*;
 import com.develop.web_server.ui.model.request.UserDetailsRequestModel;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -31,6 +30,19 @@ public class UserController {
         UserRest response = new UserRest();
         UserDto userDto = userService.getUserByUserId(userId);
         BeanUtils.copyProperties(userDto, response);
+        return response;
+    }
+
+    @GetMapping(path = "/{userId}/addresses",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<AddressResponseModel> getUserAddresses(@PathVariable String userId) {
+
+        List<AddressResponseModel> response = new ArrayList<>();
+        List<AddressDto> addresses = userService.getUserAddresses(userId);
+        ModelMapper modelMapper = new ModelMapper();
+        for (AddressDto address : addresses) {
+            response.add(modelMapper.map(address,AddressResponseModel.class));
+        }
         return response;
     }
 
@@ -57,16 +69,17 @@ public class UserController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception {
 
-        UserRest response = new UserRest();
-        UserDto userDto = new UserDto();
+        UserRest response;
 
         if (userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty()) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
 
-        BeanUtils.copyProperties(userDetails, userDto);
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userDetails, UserDto.class);
         UserDto createdUser = userService.createUser(userDto);
-        BeanUtils.copyProperties(createdUser, response);
+        response = modelMapper.map(createdUser, UserRest.class);
+
         return response;
     }
 

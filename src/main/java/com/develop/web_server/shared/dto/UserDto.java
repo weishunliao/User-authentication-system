@@ -1,7 +1,10 @@
 package com.develop.web_server.shared.dto;
 
 
+import com.develop.web_server.ui.model.request.AddressRequestModel;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class UserDto implements Serializable {
 
@@ -15,6 +18,7 @@ public class UserDto implements Serializable {
     private String encryptedPassword;
     private String emailVerificationToken;
     private Boolean emailVerificationStatus = false;
+    private List<AddressDto> addresses;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -92,18 +96,13 @@ public class UserDto implements Serializable {
         this.emailVerificationStatus = emailVerificationStatus;
     }
 
-    @Override
-    public String toString() {
-        return "UserDto{" +
-                "id=" + id +
-                ", userID='" + userID + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", encryptedPassword='" + encryptedPassword + '\'' +
-                ", emailVerificationToken='" + emailVerificationToken + '\'' +
-                ", emailVerificationStatus=" + emailVerificationStatus +
-                '}';
+    public List<AddressDto> getAddresses() {
+        return addresses;
     }
+
+    public void setAddresses(List<AddressDto> addresses) {
+        this.addresses = addresses;
+    }
+
+
 }

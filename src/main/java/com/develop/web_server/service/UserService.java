@@ -1,5 +1,6 @@
 package com.develop.web_server.service;
 
+import com.develop.web_server.shared.dto.AddressDto;
 import com.develop.web_server.shared.dto.UserDto;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -18,4 +19,6 @@ public interface UserService extends UserDetailsService {
     void deleteUser(String userId);
 
     List<UserDto> getUsers(int page, int limit);
+
+    List<AddressDto> getUserAddresses(String id);
 }
