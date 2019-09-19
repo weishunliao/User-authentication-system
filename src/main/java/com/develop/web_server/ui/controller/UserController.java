@@ -141,7 +141,22 @@ public class UserController {
         userService.deleteUser(userId);
 
         returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
-        System.out.println(returnValue);
         return returnValue;
+    }
+
+    @GetMapping(path = "/email/verification")
+    public OperationStatusModel verificationEmailToken(@RequestParam(value = "token") String token) {
+        OperationStatusModel operationStatusModel = new OperationStatusModel();
+        operationStatusModel.setOperationName(RequestOperationName.VERIFIY_EMAIL.name());
+        boolean isVerified = userService.verifyEmailToken(token);
+
+        if (isVerified) {
+            operationStatusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        } else {
+            operationStatusModel.setOperationResult(RequestOperationStatus.ERROR.name());
+
+        }
+
+        return operationStatusModel;
     }
 }

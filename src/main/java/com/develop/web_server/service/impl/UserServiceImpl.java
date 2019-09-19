@@ -56,10 +56,11 @@ public class UserServiceImpl implements UserService {
 
         ModelMapper modelMapper = new ModelMapper();
         UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
-
+        String publicUserId = utils.generateUserID(30);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        userEntity.setUserID(utils.generateUserID(30));
-
+        userEntity.setUserID(publicUserId);
+        userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
+        userEntity.setEmailVerificationStatus(false);
 
         UserEntity storedUserDetails = userRepository.save(userEntity);
         UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
@@ -74,7 +75,14 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             throw new UsernameNotFoundException(email);
         }
-        return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
+
+        return new User(userEntity.getEmail(),
+                userEntity.getEncryptedPassword(),
+                userEntity.getEmailVerificationStatus(),
+                true, true,
+                true, new ArrayList<>());
+
+//        return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
     }
 
     @Override
@@ -161,5 +169,21 @@ public class UserServiceImpl implements UserService {
 
         userRepository.delete(userEntity);
 
+    }
+
+    @Override
+    public boolean verifyEmailToken(String token) {
+
+        UserEntity user = userRepository.findUserByEmailVerificationToken(token);
+        if (user != null) {
+            boolean isExpired = utils.hasTokenExpired(token);
+            if (!isExpired) {
+                user.setEmailVerificationToken(null);
+                user.setEmailVerificationStatus(Boolean.TRUE);
+                userRepository.save(user);
+                return true;
+            }
+        }
+        return false;
     }
 }
