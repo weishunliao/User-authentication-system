@@ -144,7 +144,7 @@ public class UserController {
         return returnValue;
     }
 
-    @GetMapping(path = "/email/verification")
+    @GetMapping(path = "/email-verification", produces = {MediaType.APPLICATION_JSON_VALUE})
     public OperationStatusModel verificationEmailToken(@RequestParam(value = "token") String token) {
         OperationStatusModel operationStatusModel = new OperationStatusModel();
         operationStatusModel.setOperationName(RequestOperationName.VERIFIY_EMAIL.name());
@@ -154,7 +154,6 @@ public class UserController {
             operationStatusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
         } else {
             operationStatusModel.setOperationResult(RequestOperationStatus.ERROR.name());
-
         }
 
         return operationStatusModel;

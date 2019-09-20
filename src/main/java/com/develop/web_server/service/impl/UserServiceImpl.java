@@ -6,6 +6,7 @@ import com.develop.web_server.io.repository.AddressRepository;
 import com.develop.web_server.io.repository.UserRepository;
 import com.develop.web_server.io.entity.UserEntity;
 import com.develop.web_server.service.UserService;
+import com.develop.web_server.shared.AmazonSES;
 import com.develop.web_server.shared.Utils;
 import com.develop.web_server.shared.dto.AddressDto;
 import com.develop.web_server.shared.dto.UserDto;
@@ -65,6 +66,8 @@ public class UserServiceImpl implements UserService {
         UserEntity storedUserDetails = userRepository.save(userEntity);
         UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
 
+
+        new AmazonSES().verifyEmail(returnValue);
 
         return returnValue;
     }
