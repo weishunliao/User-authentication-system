@@ -7,6 +7,8 @@ import com.develop.web_server.service.UserService;
 import com.develop.web_server.shared.dto.AddressDto;
 import com.develop.web_server.shared.dto.UserDto;
 import com.develop.web_server.ui.model.reponse.*;
+import com.develop.web_server.ui.model.request.NewPasswordResetRequestModel;
+import com.develop.web_server.ui.model.request.PasswordResetRequestModel;
 import com.develop.web_server.ui.model.request.UserDetailsRequestModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -43,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/{userId}/addresses",
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,"application/hal+json"})
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/hal+json"})
     public Resources<AddressRest> getUserAddresses(@PathVariable String userId) {
 
         List<AddressRest> response = new ArrayList<>();
@@ -62,7 +64,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/{userId}/addresses/{addressId}",
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,"application/hal+json"})
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/hal+json"})
     public Resource<AddressRest> getUserAddressesById(@PathVariable String userId, @PathVariable String addressId) {
 
         AddressDto address = addressService.getAddressByAddressId(addressId);
@@ -70,7 +72,7 @@ public class UserController {
             ModelMapper modelMapper = new ModelMapper();
             AddressRest responseModel = modelMapper.map(address, AddressRest.class);
 //            Link addressLink = linkTo(UserController.class).slash(userId).slash("addresses").slash(addressId).withSelfRel();
-            Link addressLink = linkTo(methodOn(UserController.class).getUserAddressesById(userId,addressId)).withSelfRel();
+            Link addressLink = linkTo(methodOn(UserController.class).getUserAddressesById(userId, addressId)).withSelfRel();
             Link userLink = linkTo(UserController.class).slash(userId).withRel("user");
             Link addressesLink = linkTo(UserController.class).slash(userId).slash("addresses").withRel("address list");
 
@@ -147,7 +149,7 @@ public class UserController {
     @GetMapping(path = "/email-verification", produces = {MediaType.APPLICATION_JSON_VALUE})
     public OperationStatusModel verificationEmailToken(@RequestParam(value = "token") String token) {
         OperationStatusModel operationStatusModel = new OperationStatusModel();
-        operationStatusModel.setOperationName(RequestOperationName.VERIFIY_EMAIL.name());
+        operationStatusModel.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
         boolean isVerified = userService.verifyEmailToken(token);
 
         if (isVerified) {
@@ -157,5 +159,36 @@ public class UserController {
         }
 
         return operationStatusModel;
+    }
+
+
+    @PostMapping(path = "/password-reset-request", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public OperationStatusModel passwordReset(@RequestBody PasswordResetRequestModel passwordResetRequestModel) {
+        OperationStatusModel operationStatusModel = new OperationStatusModel();
+        boolean result = userService.passwordReset(passwordResetRequestModel.getEmail());
+        operationStatusModel.setOperationName(RequestOperationName.PASSWORD_RESET.name());
+        if (result) {
+            operationStatusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        } else {
+            operationStatusModel.setOperationResult(RequestOperationStatus.ERROR.name());
+
+        }
+        return operationStatusModel;
+
+    }
+
+    @PostMapping(path = "/new-password")
+    public Boolean passwordReset(@RequestBody NewPasswordResetRequestModel newPasswordResetRequestModel) {
+        boolean setUpNewPasswordResult = userService.setUpNewPassword(newPasswordResetRequestModel.getToken(),
+                newPasswordResetRequestModel.getOldPassword(),
+                newPasswordResetRequestModel.getNewPassword());
+
+        if (setUpNewPasswordResult) {
+            return true;
+        }
+        return false;
+
+
     }
 }

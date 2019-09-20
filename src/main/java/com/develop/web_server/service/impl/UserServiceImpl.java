@@ -2,7 +2,9 @@ package com.develop.web_server.service.impl;
 
 import com.develop.web_server.exception.UserServiceException;
 import com.develop.web_server.io.entity.AddressEntity;
+import com.develop.web_server.io.entity.PasswordEntity;
 import com.develop.web_server.io.repository.AddressRepository;
+import com.develop.web_server.io.repository.PasswordRepository;
 import com.develop.web_server.io.repository.UserRepository;
 import com.develop.web_server.io.entity.UserEntity;
 import com.develop.web_server.service.UserService;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -36,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    PasswordRepository passwordRepository;
 
     @Autowired
     Utils utils;
@@ -184,6 +191,42 @@ public class UserServiceImpl implements UserService {
                 user.setEmailVerificationToken(null);
                 user.setEmailVerificationStatus(Boolean.TRUE);
                 userRepository.save(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean passwordReset(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if (userEntity != null) {
+            String token = utils.generatePasswordResetToken(userEntity.getUserID());
+            PasswordEntity passwordEntity = new PasswordEntity();
+            passwordEntity.setUserDetails(userEntity);
+            passwordEntity.setToken(token);
+            passwordRepository.save(passwordEntity);
+
+            boolean result = new AmazonSES().passwordReset(token);
+            return result;
+        }
+
+
+        return false;
+    }
+
+    @Override
+    public boolean setUpNewPassword(String token, String oldPassword, String newPassword) {
+
+        PasswordEntity passwordEntity = passwordRepository.findByToken(token);
+        if (passwordEntity != null) {
+            UserEntity userEntity = userRepository.findById(passwordEntity.getUserDetails().getId());
+            boolean isExpired = utils.hasTokenExpired(token);
+            boolean matches = bCryptPasswordEncoder.matches(oldPassword, userEntity.getEncryptedPassword());
+            if (!isExpired && matches) {
+                userEntity.setPassword(newPassword);
+                userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(newPassword));
+                userRepository.save(userEntity);
                 return true;
             }
         }

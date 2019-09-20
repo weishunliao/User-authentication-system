@@ -37,7 +37,6 @@ public class Utils {
 
     public boolean hasTokenExpired(String token) {
         Claims claims = Jwts.parser().setSigningKey(SecurityConstants.TOKEN_SECRET).parseClaimsJws(token).getBody();
-        System.out.println(claims);
         Date tokenExpirationDate = claims.getExpiration();
         Date today = new Date();
 
@@ -46,7 +45,15 @@ public class Utils {
 
     public String generateEmailVerificationToken(String publicUserId) {
         String token = Jwts.builder().setSubject(publicUserId)
-                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPERATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET)
+                .compact();
+        return token;
+    }
+
+    public String generatePasswordResetToken(String userId) {
+        String token = Jwts.builder().setSubject(userId)
+                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.PASSWORD_RESET_TOKEN_EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET)
                 .compact();
         return token;
