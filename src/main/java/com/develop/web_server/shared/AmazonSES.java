@@ -7,7 +7,10 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.develop.web_server.shared.dto.UserDto;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class AmazonSES {
     private String FROM = "weishun.liao002@gmail.com";
 
@@ -20,7 +23,7 @@ public class AmazonSES {
         String SUBJECT = "Last step to complete your registration";
 
         SendEmailRequest sendEmailRequest = new SendEmailRequest()
-                .withDestination(new Destination().withToAddresses(FROM))
+                .withDestination(new Destination().withToAddresses(userDto.getEmail()))
                 .withMessage(new Message()
                         .withBody(new Body().withText(new Content().withCharset("UTF-8").withData(TEXT_BODY + userDto.getEmailVerificationToken())))
                         .withSubject(new Content().withCharset("UTF-8").withData(SUBJECT)))
@@ -33,7 +36,7 @@ public class AmazonSES {
         System.out.println("Email sent");
     }
 
-    public boolean passwordReset(String token) {
+    public boolean passwordReset(String token, String email) {
         AWSCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
         AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).withCredentials(credentialsProvider).build();
 
@@ -42,7 +45,7 @@ public class AmazonSES {
         String SUBJECT = "Password reset";
 
         SendEmailRequest sendEmailRequest = new SendEmailRequest()
-                .withDestination(new Destination().withToAddresses(FROM))
+                .withDestination(new Destination().withToAddresses(email))
                 .withMessage(new Message()
                         .withBody(new Body().withText(new Content().withCharset("UTF-8").withData(TEXT_BODY + token)))
                         .withSubject(new Content().withCharset("UTF-8").withData(SUBJECT)))
