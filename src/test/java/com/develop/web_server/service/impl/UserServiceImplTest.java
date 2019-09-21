@@ -3,8 +3,6 @@ package com.develop.web_server.service.impl;
 import com.develop.web_server.exception.UserServiceException;
 import com.develop.web_server.io.entity.AddressEntity;
 import com.develop.web_server.io.entity.UserEntity;
-import com.develop.web_server.io.repository.AddressRepository;
-import com.develop.web_server.io.repository.PasswordRepository;
 import com.develop.web_server.io.repository.UserRepository;
 import com.develop.web_server.shared.AmazonSES;
 import com.develop.web_server.shared.Utils;
@@ -16,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.matchers.Any;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,12 +32,6 @@ class UserServiceImplTest {
 
     @Mock
     UserRepository userRepository;
-
-    @Mock
-    AddressRepository addressRepository;
-
-    @Mock
-    PasswordRepository passwordRepository;
 
     @Mock
     Utils utils;
