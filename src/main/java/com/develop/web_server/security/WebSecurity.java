@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.lang.module.Configuration;
+
 
 
 /*
@@ -42,6 +44,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.POST,SecurityConstants.SET_NEW_PASSWORD)
                 .permitAll()
+                .antMatchers(SecurityConstants.H2_CONSOLE)
+                .permitAll()
+                .antMatchers("/v2/api-docs","/configuration/**","/swagger*/**","/webjars/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -50,6 +56,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        httpSecurity.headers().frameOptions().disable();
     }
 
     @Override

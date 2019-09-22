@@ -41,7 +41,7 @@ public class AmazonSES {
         AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).withCredentials(credentialsProvider).build();
 
 
-        String TEXT_BODY = "Please click the link to set your new password. Click http://localhost:8080/password-reset?token=";
+        String TEXT_BODY = "Please click the link to set your new password. Click http://localhost:8080/users/password-reset?token=";
         String SUBJECT = "Password reset";
 
         SendEmailRequest sendEmailRequest = new SendEmailRequest()
