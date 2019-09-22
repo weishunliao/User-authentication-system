@@ -33,6 +33,7 @@ public class SwaggerConfig {
     @Bean
     public Docket apiDocket() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .host("sprint-boot-web-server.ga")
                 .apiInfo(apiInfo)
                 .select().apis(RequestHandlerSelectors.basePackage("com.develop.web_server"))
                 .build();
