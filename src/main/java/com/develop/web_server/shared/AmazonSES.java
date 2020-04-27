@@ -1,12 +1,13 @@
 package com.develop.web_server.shared;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.develop.web_server.shared.dto.UserDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
@@ -14,12 +15,17 @@ import org.springframework.stereotype.Component;
 public class AmazonSES {
     private String FROM = "weishun.liao002@gmail.com";
 
+    @Value("${aws.awsAccessKey}")
+    private String awsAccessKey;
+
+    @Value("${aws.awsSecretKey}")
+    private String awsSecretKey;
+
     public void verifyEmail(UserDto userDto) {
-        AWSCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
-        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).withCredentials(credentialsProvider).build();
+        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).withCredentials(
+                new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKey, awsSecretKey))).build();
 
-
-        String TEXT_BODY = "Please verify your email address. Click http://sprint-boot-web-server.ga/users/email-verification?token=";
+        String TEXT_BODY = "Please verify your email address. Click http://34.82.124.184/users/email-verification?token=";
         String SUBJECT = "Last step to complete your registration";
 
         SendEmailRequest sendEmailRequest = new SendEmailRequest()
@@ -37,11 +43,11 @@ public class AmazonSES {
     }
 
     public boolean passwordReset(String token, String email) {
-        AWSCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
-        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).withCredentials(credentialsProvider).build();
+        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).withCredentials(
+                new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKey, awsSecretKey))).build();
 
 
-        String TEXT_BODY = "Please click the link to set your new password. Click http://sprint-boot-web-server.ga/users/password-reset?token=";
+        String TEXT_BODY = "Please click the link to set your new password. Click http://34.82.124.184/users/password-reset?token=";
         String SUBJECT = "Password reset";
 
         SendEmailRequest sendEmailRequest = new SendEmailRequest()
